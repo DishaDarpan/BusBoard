@@ -33,22 +33,31 @@ console.log(UpcomingBuses);
 
 async function getStopPointsWithinRadius(){
 
-    console.log('Please enter the PostCode: '); 
-    const PostCode = readline.prompt();
+  console.log('Please enter the PostCode: '); 
+  const PostCode = readline.prompt();
+  
+  //Fetching the coordinates for the given postcode
+  const  PostCodeResponse= await fetch('http://api.postcodes.io/postcodes/'+PostCode);
+  const PostCodeData = await PostCodeResponse.json(); 
+  const {longitude, latitude}= PostCodeData.result;
+  
+  //Passing the coordinates to get Stops within the Radius
+  const StopRadiusResponse = await fetch(`https://api.tfl.gov.uk/StopPoint/?lat=${latitude}&lon=${longitude}&stopTypes=NaptanPublicBusCoachTram`) 
+  const StopRadiusData = await StopRadiusResponse.json();    
+  //console.log(StopRadiusData);
+
+  //Print Next Bus Arrival Info for Two Stop Points Within Radius
+
+  for(let i=0; i<1; i++){
+
+    const BusStopCode = StopRadiusData.stopPoints[i].naptanId; //Getting Bus Stop Code from Stops Within Radius Data
     
-    //Fetching the coordinates for the given postcode
-    const  PostCodeResponse= await fetch('http://api.postcodes.io/postcodes/'+PostCode);
-    const PostCodeData = await PostCodeResponse.json(); 
-    const {longitude, latitude}= PostCodeData.result;
-    
-    //Passing the coordinates to get Stops within the Radius
-    const StopRadiusResponse = await fetch(`https://api.tfl.gov.uk/StopPoint/?lat=${latitude}&lon=${longitude}&stopTypes=NaptanPublicBusCoachTram`) 
-    const StopRadiusData = await StopRadiusResponse.json();    
-    console.log(StopRadiusData);
-     
+    //Printing Bus Arrival Info by calling getNextBusArrivals Function
+    console.log('Next Bus Arrival Info for Bus Stop Code ' + StopRadiusData.stopPoints[i].naptanId + ' near ' + PostCode)
+    await getNextBusArrivals(BusStopCode);
+  }
+   
 }
-
-
 
 getStopPointsWithinRadius();
 
