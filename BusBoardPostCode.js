@@ -2,6 +2,7 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const readline = require('readline-sync')
 
+
 //Find out next live bus arrivals
 // function getNextBusArrivals(){
 
@@ -14,23 +15,24 @@ const readline = require('readline-sync')
 // }
 // getNextBusArrivals();
 
-function getLongitudeLatitude(){
+
+async function getStopPointsWithinRadius(){
 
     console.log('Please enter the PostCode: '); 
     const PostCode = readline.prompt();
-        
-    fetch('http://api.postcodes.io/postcodes/'+PostCode) 
-      .then(response => response.json())
-      .then(body => {
-               const {longitude, latitude}= body.result;
-               
-               console.log({longitude,latitude})});
-        
+    
+    //Fetching the coordinates for the given postcode
+    const response = await fetch('http://api.postcodes.io/postcodes/'+PostCode);
+    const data = await response.json(); 
+    const {longitude, latitude}= data.result;
+    console.log({longitude,latitude});
+    
+    //Passing the coordinates to get Stop within the Radius
+    const response1 = await fetch(`https://api.tfl.gov.uk/StopPoint/?lat=${latitude}&lon=${longitude}&stopTypes=NaptanPublicBusCoachTram`) 
+    const data1 = await response1.json();    
+    console.log(data1); 
 }
 
-getLongitudeLatitude();
+getStopPointsWithinRadius();
 
-// fetch('https://api.tfl.gov.uk/StopPoint/?lat={lat}&lon={lon}&stopTypes={stopTypes}[&radius][&useStopPointHierarchy][&modes][&categories][&returnLines]') 
-    //     .then(response => response.json())
-    //     .then(body => console.log(body));
 
