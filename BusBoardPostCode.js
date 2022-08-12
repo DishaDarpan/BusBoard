@@ -48,7 +48,7 @@ async function getStopPointsWithinRadius(){
 
   //Print Next Bus Arrival Info for Two Stop Points Within Radius
 
-  for(let i=0; i<1; i++){
+  for(let i=0; i<2; i++){
 
     const BusStopCode = StopRadiusData.stopPoints[i].naptanId; //Getting Bus Stop Code from Stops Within Radius Data
     
